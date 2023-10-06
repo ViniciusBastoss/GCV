@@ -1,6 +1,5 @@
-package br.edu.unifal.exception;
+package br.edu.unifalmg.exception;
 
-import br.edu.unifal.domain.Chore;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
