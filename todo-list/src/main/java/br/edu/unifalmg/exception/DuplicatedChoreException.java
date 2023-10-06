@@ -1,4 +1,4 @@
-package br.edu.unifal.exception;
+package br.edu.unifalmg.exception;
 
 import lombok.NoArgsConstructor;
 
