@@ -147,4 +147,8 @@ public class ChoreService {
 
     private final Predicate<List<Chore>> isChoreListEmpty = choreList -> choreList.isEmpty();
 
+    public  void printChores(){
+
+    }
+
 }
