@@ -157,4 +157,8 @@ public class ChoreService {
                 + (chore.getIsCompleted() == Boolean.TRUE ? "Completa": "Incompleta")));
     }
 
+    public void editChore(String description, LocalDate deadline, String newDescription, LocalDate newDeadline){
+
+    }
+
 }

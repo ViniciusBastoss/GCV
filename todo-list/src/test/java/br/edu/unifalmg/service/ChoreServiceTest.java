@@ -297,8 +297,53 @@ public class ChoreServiceTest {
 
     }
 
+    @Test
+    @DisplayName("#editChore > When the list is empty > Throw an exception")
+    void editChoreWhenTheListIsEmptyThrowAnException() {
+        ChoreService service = new ChoreService();
+        assertThrows(EmptyChoreListException.class, () -> {
+            service.editChore("Qualquer coisa", LocalDate.now(),
+                    "New description", LocalDate.now());
+        });
+    }
 
-   /* @Test
-    @DisplayName("When list is not empty"){}*/
+    @Test
+    @DisplayName("#editChore > When the list is not empty > When the chore does not exist > Throw an exception")
+    void editChoreWhenTheListIsNotEmptyWhenTheChoreDoesNotExistThrowAnException() {
+        ChoreService service = new ChoreService();
+        service.addChore("Description", LocalDate.now());
+        assertThrows(ChoreNotFoundException.class, () -> {
+            service.editChore("Chore to be edited", LocalDate.now().plusDays(5),
+                    "New description", LocalDate.now());
+        });
+    }
+
+    @Test
+    @DisplayName("#editChore > When the list is not empty > When the chore exists > Edit the chore")
+    void editChoreWhenTheDeadlineIsValidWhenTheListIsNotEmptyWhenTheChoreExistsEditTheChore() {
+        ChoreService service = new ChoreService();
+
+        service.addChore("Chore #01", LocalDate.now().plusDays(1));
+        assertEquals(1, service.getChores().size());
+
+        assertDoesNotThrow(() -> service.editChore("Chore #01", LocalDate.now().plusDays(1),
+                "New description", LocalDate.now()));
+        assertAll(
+                () -> assertEquals("New description", service.getChores().get(0).getDescription()),
+                () -> assertEquals(LocalDate.now(), service.getChores().get(0).getDeadline()));
+    }
+
+    @Test
+    @DisplayName("#editChore > When the deadline edit is invalid > Throw an exception")
+    void editChoreWhenTheDeadlineEditIsInvalidThrowAnException() {
+        ChoreService service = new ChoreService();
+        service.addChore("Chore #01", LocalDate.now());
+        assertThrows(InvalidDeadlineException.class, () -> {
+            service.editChore("Chore #01", LocalDate.now(), "New description",
+                    LocalDate.now().minusDays(1));
+        });
+
+    }
+
 
 }
