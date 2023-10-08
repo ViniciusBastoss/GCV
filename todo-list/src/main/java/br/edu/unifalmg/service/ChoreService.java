@@ -148,7 +148,13 @@ public class ChoreService {
     private final Predicate<List<Chore>> isChoreListEmpty = choreList -> choreList.isEmpty();
 
     public  void printChores(){
+        if (isChoreListEmpty.test(this.chores)) {
+            throw new EmptyChoreListException("Unable to print a chore from an empty list");
+        }
 
+        this.chores.stream().forEach(chore -> System.out.println("Descrição: \"" + chore.getDescription() + "\""
+                + " Deadline: " + chore.getDeadline().toString() + " Status: "
+                + (chore.getIsCompleted() == Boolean.TRUE ? "Completa": "Incompleta")));
     }
 
 }

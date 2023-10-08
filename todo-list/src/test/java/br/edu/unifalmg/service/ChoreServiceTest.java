@@ -270,7 +270,8 @@ public class ChoreServiceTest {
         String capturedOutput = outputStream.toString();
 
         assertEquals("Descrição: \"Chore #01\" Deadline: " + LocalDate.now().toString()
-                + " Status: Incompleta" + "\n", capturedOutput);
+                + " Status: Incompleta" + System.lineSeparator(), capturedOutput);
+
 
     }
 
@@ -290,9 +291,9 @@ public class ChoreServiceTest {
         String capturedOutput = outputStream.toString();
 
         assertEquals("Descrição: \"Chore #01\" Deadline: " + LocalDate.now().toString()
-                + " Status: Incompleta" + "\n" + "Descrição: \"Chore #02\" Deadline: "
+                + " Status: Incompleta"  + System.lineSeparator() + "Descrição: \"Chore #02\" Deadline: "
                 + LocalDate.now().plusDays(1).toString()
-                + " Status: Incompleta" + "\n", capturedOutput);
+                + " Status: Incompleta"  + System.lineSeparator(), capturedOutput);
 
     }
 
