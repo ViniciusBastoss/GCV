@@ -157,4 +157,39 @@ public class ChoreService {
                 + (chore.getIsCompleted() == Boolean.TRUE ? "Completa": "Incompleta")));
     }
 
+    public void editChore(String description, LocalDate deadline, String newDescription, LocalDate newDeadline){
+        if (isChoreListEmpty.test(this.chores)) {
+            throw new EmptyChoreListException("Unable to edit a chore from an empty list");
+        }
+        if (Objects.isNull(newDescription) || newDescription.isEmpty()) {
+            throw new InvalidDescriptionException("The newDescription cannot be null or empty");
+        }
+        if (Objects.isNull(newDeadline) || newDeadline.isBefore(LocalDate.now())) {
+            throw new InvalidDeadlineException("The newDeadline cannot be null or before the current date");
+        }
+
+        boolean isChoreExist = this.chores.stream().anyMatch((chore -> chore.getDescription().equals(description)
+                && chore.getDeadline().isEqual(deadline)));
+        if (!isChoreExist) {
+            throw new ChoreNotFoundException("The chore to be changed does not exist");
+        }
+
+        for (Chore chore : chores) {
+            if (chore.getDescription().equals(newDescription)
+                    && chore.getDeadline().isEqual(newDeadline)) {
+                throw new DuplicatedChoreException("Changing the chore will cause duplication of tasks");
+            }
+        }
+
+        this.chores.stream()
+                .filter(chore -> chore.getDescription().equals(description)
+                        && chore.getDeadline().isEqual(deadline))
+                .findFirst()
+                .ifPresent(chore -> {
+                    // Edita o nome e idade do elemento encontrado
+                    chore.setDescription(newDescription);
+                    chore.setDeadline(newDeadline);
+                });
+    }
+
 }
