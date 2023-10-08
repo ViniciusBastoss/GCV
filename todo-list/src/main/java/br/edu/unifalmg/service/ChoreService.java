@@ -26,11 +26,11 @@ public class ChoreService {
      * Method to add a new chore
      *
      * @param description The description of the chore
-     * @param deadline    The deadline to fulfill the chore
+     * @param deadline The deadline to fulfill the chore
      * @return Chore The new (and uncompleted) chore
      * @throws InvalidDescriptionException When the description is null or empty
-     * @throws InvalidDeadlineException    When the deadline is null or empty
-     * @throws DuplicatedChoreException    When the given chore already exists
+     * @throws InvalidDeadlineException When the deadline is null or empty
+     * @throws DuplicatedChoreException When the given chore already exists
      */
     public Chore addChore(String description, LocalDate deadline) {
         if (Objects.isNull(description) || description.isEmpty()) {
@@ -90,7 +90,7 @@ public class ChoreService {
      * Method to delete a given chore.
      *
      * @param description The description of the chore
-     * @param deadline    The deadline of the chore
+     * @param deadline The deadline of the chore
      */
     public void deleteChore(String description, LocalDate deadline) {
         if (isChoreListEmpty.test(this.chores)) {
@@ -107,10 +107,11 @@ public class ChoreService {
     }
 
     /**
+     *
      * Method to toggle a chore from completed to uncompleted and vice-versa.
      *
      * @param description The chore's description
-     * @param deadline    The deadline to complete the chore
+     * @param deadline The deadline to complete the chore
      * @throws ChoreNotFoundException When the chore is not found on the list
      */
     public void toggleChore(String description, LocalDate deadline) {
@@ -146,17 +147,49 @@ public class ChoreService {
 
     private final Predicate<List<Chore>> isChoreListEmpty = choreList -> choreList.isEmpty();
 
-    public void printChores() {
+    public  void printChores(){
         if (isChoreListEmpty.test(this.chores)) {
             throw new EmptyChoreListException("Unable to print a chore from an empty list");
         }
 
         this.chores.stream().forEach(chore -> System.out.println("Descrição: \"" + chore.getDescription() + "\""
                 + " Deadline: " + chore.getDeadline().toString() + " Status: "
-                + (chore.getIsCompleted() == Boolean.TRUE ? "Completa" : "Incompleta")));
+                + (chore.getIsCompleted() == Boolean.TRUE ? "Completa": "Incompleta")));
     }
 
-    public void editChore(String description, LocalDate deadline, String newDescription, LocalDate newDeadline) {
+    public void editChore(String description, LocalDate deadline, String newDescription, LocalDate newDeadline){
+        if (isChoreListEmpty.test(this.chores)) {
+            throw new EmptyChoreListException("Unable to edit a chore from an empty list");
+        }
+        if (Objects.isNull(newDescription) || newDescription.isEmpty()) {
+            throw new InvalidDescriptionException("The newDescription cannot be null or empty");
+        }
+        if (Objects.isNull(newDeadline) || newDeadline.isBefore(LocalDate.now())) {
+            throw new InvalidDeadlineException("The newDeadline cannot be null or before the current date");
+        }
+
+        boolean isChoreExist = this.chores.stream().anyMatch((chore -> chore.getDescription().equals(description)
+                && chore.getDeadline().isEqual(deadline)));
+        if (!isChoreExist) {
+            throw new ChoreNotFoundException("The chore to be changed does not exist");
+        }
+
+        for (Chore chore : chores) {
+            if (chore.getDescription().equals(newDescription)
+                    && chore.getDeadline().isEqual(newDeadline)) {
+                throw new DuplicatedChoreException("Changing the chore will cause duplication of tasks");
+            }
+        }
+
+        this.chores.stream()
+                .filter(chore -> chore.getDescription().equals(description)
+                        && chore.getDeadline().isEqual(deadline))
+                .findFirst()
+                .ifPresent(chore -> {
+                    // Edita o nome e idade do elemento encontrado
+                    chore.setDescription(newDescription);
+                    chore.setDeadline(newDeadline);
+                });
     }
 
 }
