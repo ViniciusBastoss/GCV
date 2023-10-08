@@ -334,16 +334,48 @@ public class ChoreServiceTest {
     }
 
     @Test
-    @DisplayName("#editChore > When the deadline edit is invalid > Throw an exception")
-    void editChoreWhenTheDeadlineEditIsInvalidThrowAnException() {
+    @DisplayName("#editChore > When the new dead line is invalidated > Throw an exception")
+    void editChoreWhenTheNewDeadlineIsInvalidThrowAnException() {
         ChoreService service = new ChoreService();
         service.addChore("Chore #01", LocalDate.now());
-        assertThrows(InvalidDeadlineException.class, () -> {
-            service.editChore("Chore #01", LocalDate.now(), "New description",
-                    LocalDate.now().minusDays(1));
-        });
+        assertAll(
+                () -> assertThrows(InvalidDeadlineException.class,
+                        () -> service.editChore("Chore #01", LocalDate.now(), "Description", null)),
+                () -> assertThrows(InvalidDeadlineException.class,
+                        () -> service.editChore("Chore #01", LocalDate.now(), "Description", LocalDate.now().minusDays(1)))
+        );
 
     }
 
+    @Test
+    @DisplayName("#editChore > When the description is invalid > Throw an exception")
+    void editChoreWhenTheDescriptionIsInvalidThrowAnException() {
+        ChoreService service = new ChoreService();
+        service.addChore("Chore #01", LocalDate.now());
+        assertAll(
+                () -> assertThrows(InvalidDescriptionException.class,
+                        () -> service.editChore("Chore #01", LocalDate.now(),null, null)),
+                () -> assertThrows(InvalidDescriptionException.class,
+                        () -> service.editChore("Chore #01", LocalDate.now(),"", null)),
+                () -> assertThrows(InvalidDescriptionException.class,
+                        () -> service.editChore("Chore #01", LocalDate.now(),null, LocalDate.now().plusDays(1))),
+                () -> assertThrows(InvalidDescriptionException.class,
+                        () -> service.editChore("Chore #01", LocalDate.now(),"", LocalDate.now().plusDays(1))),
+                () -> assertThrows(InvalidDescriptionException.class,
+                        () -> service.editChore("Chore #01", LocalDate.now(),null, LocalDate.now().minusDays(1))),
+                () -> assertThrows(InvalidDescriptionException.class,
+                        () -> service.editChore("Chore #01", LocalDate.now(),"", LocalDate.now().minusDays(1)))
+        );
+    }
 
+    @Test
+    @DisplayName("#editChore > When edit a chore > When editing in the chore makes it the same as another chore > Throw an exception")
+    void editChoreWhenEditAChoreWhenWditingInTheChoreMakesItTheSameAsAnotherChoreThrowAnException() {
+        ChoreService service = new ChoreService();
+        service.addChore("Chore #01", LocalDate.now());
+        service.addChore("Chore #02", LocalDate.now().plusDays(1));
+        assertThrows(DuplicatedChoreException.class,
+                () -> service.editChore("Chore #02", LocalDate.now().plusDays(1),
+                        "Chore #01", LocalDate.now()));
+    }
 }
