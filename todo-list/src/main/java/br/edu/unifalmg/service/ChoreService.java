@@ -6,7 +6,12 @@ import br.edu.unifalmg.exception.ToggleChoreWithInvalidDeadlineException;
 import br.edu.unifalmg.domain.Chore;
 import br.edu.unifalmg.enumerator.ChoreFilter;
 import br.edu.unifalmg.exception.*;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +22,12 @@ import java.util.stream.Collectors;
 public class ChoreService {
 
     private List<Chore> chores;
+    ObjectMapper objectMapper;
 
     public ChoreService() {
         chores = new ArrayList<>();
     }
+
 
     /**
      * Method to add a new chore
@@ -85,6 +92,9 @@ public class ChoreService {
     public List<Chore> getChores() {
         return this.chores;
     }
+//    public void setChores(List<Chore> chores) {
+//         this.chores = chores;
+//    }
 
     /**
      * Method to delete a given chore.
@@ -191,5 +201,14 @@ public class ChoreService {
                     chore.setDeadline(newDeadline);
                 });
     }
+
+    public void fileReading() throws IOException {
+        this.objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+
+        File file = new File("src/chores.json");
+        this.chores = objectMapper.readValue(file, new TypeReference<List<Chore>>() {});
+    }
+
 
 }
