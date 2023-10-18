@@ -18,6 +18,7 @@ dependencies {
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.0.1'
     //implementation 'com.fasterxml.jackson.core:jackson-dataformat-xml:2.14.2'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.0'
+    testImplementation 'org.mockito:mockito-core:5.6.0'
 }
 
 test {

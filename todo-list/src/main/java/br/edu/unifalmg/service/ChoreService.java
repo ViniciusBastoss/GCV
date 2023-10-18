@@ -6,6 +6,8 @@ import br.edu.unifalmg.exception.ToggleChoreWithInvalidDeadlineException;
 import br.edu.unifalmg.domain.Chore;
 import br.edu.unifalmg.enumerator.ChoreFilter;
 import br.edu.unifalmg.exception.*;
+import br.edu.unifalmg.repository.ChoreRepository;
+import br.edu.unifalmg.repository.impl.FileChoreRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -22,10 +24,17 @@ import java.util.stream.Collectors;
 public class ChoreService {
 
     private List<Chore> chores;
-    ObjectMapper objectMapper;
+    private ObjectMapper mapper;
 
-    public ChoreService() {
+    private ChoreRepository repository;
+
+    public ChoreService(){
         chores = new ArrayList<>();
+    }
+    public ChoreService(ChoreRepository repository) {
+        chores = new ArrayList<>();
+        mapper = new ObjectMapper().findAndRegisterModules();
+        this.repository = repository;
     }
 
 
@@ -202,12 +211,17 @@ public class ChoreService {
                 });
     }
 
-    public void fileReading() throws IOException {
-        this.objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-
-        File file = new File("src/chores.json");
-        this.chores = objectMapper.readValue(file, new TypeReference<List<Chore>>() {});
+//    public void loadChores() throws IOException {
+//
+//        this.mapper = new ObjectMapper();
+//        //mapper.registerModule(new JavaTimeModule());
+//        mapper.findAndRegisterModules();
+//
+//        File file = new File("src/chores.json");
+//        this.chores = mapper.readValue(file, new TypeReference<List<Chore>>() {});
+//    }
+    public void loadChores(){
+        this.chores = repository.load();
     }
 
 

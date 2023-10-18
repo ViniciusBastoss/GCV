@@ -3,19 +3,34 @@ package br.edu.unifalmg.service;
 import br.edu.unifalmg.domain.Chore;
 import br.edu.unifalmg.enumerator.ChoreFilter;
 import br.edu.unifalmg.exception.*;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import br.edu.unifalmg.repository.ChoreRepository;
+import br.edu.unifalmg.repository.impl.FileChoreRepository;
+import org.junit.jupiter.api.*;
 import org.junit.platform.commons.util.ReflectionUtils;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ChoreServiceTest {
+
+    @InjectMocks
+    private ChoreService service;
+    @Mock
+    private ChoreRepository repository;
+
+    @BeforeEach
+    public void setup(){
+        MockitoAnnotations.openMocks(this);
+    }
 
     @Test
     @DisplayName("#addChore > When the description is invalid > Throw an exception")
@@ -377,5 +392,17 @@ public class ChoreServiceTest {
         assertThrows(DuplicatedChoreException.class,
                 () -> service.editChore("Chore #02", LocalDate.now().plusDays(1),
                         "Chore #01", LocalDate.now()));
+    }
+
+    @Test
+    @DisplayName("#loadChores > When the chores are loaded > Update the chore list")
+    void loadChoresWhenTheChoresAreLoadedUpdateTheChoreList(){
+        Mockito.when(repository.load()).thenReturn(new ArrayList<>(){{
+            add(new  Chore("Chore #01", Boolean.FALSE, LocalDate.now()));
+            add(new  Chore("Chore #02", Boolean.FALSE, LocalDate.now().minusDays(2)));
+        }});
+        service.loadChores();
+        assertEquals(2,service.getChores().size());
+
     }
 }
